@@ -19,7 +19,7 @@ df = df[attributes]
 
 df.release_date = pd.to_datetime(df.release_date)
 df.release_date = df.release_date.dt.year
-
+df = df.head(20)
 df['language'] = df['name'].apply(detect_language)
 vi_df = df[df['language'] == 'vi']
 en_df = df[df['language'] == 'en']
@@ -27,5 +27,6 @@ en_df = df[df['language'] == 'en']
 # Translate Vietnamese to English
 vi_df['name'] = vi_df['name'].apply(translate_text)
 
-
-print(vi_df.head())
+print(df)
+print(vi_df)
+print(en_df)    
