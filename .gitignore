@@ -129,7 +129,7 @@ env.bak/
 venv.bak/
 
 # Folder
-.DS_Store
+modules/.DS_Store
 alex-test/
 data/
 pycache/
