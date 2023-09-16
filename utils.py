@@ -9,13 +9,12 @@ import matplotlib.pyplot as plt
 import ast
 from collections import Counter
 from unidecode import unidecode
-import spacy
 import sys
 from googletrans import Translator
-
+import spacy
+nlp = spacy.load('en_core_web_lg')
 # Load the English language model
-nlp = spacy.load("en_core_web_sm")
-
+font_path = "/usr/share/fonts/truetype/liberation/LiberationMono-BoldItalic.ttf"
 load_dotenv()
 PATH = (os.environ.get('P'))
 with open(PATH + '/data/vietnamese-stopwords-dash.txt', 'r', encoding='utf-8') as f:
@@ -99,9 +98,11 @@ def tokenize_text_Np(input_string, word_type=None):
         return ' '
 
 def detect_language(sentence):
+    print("detected language")
     return Translator().detect(sentence).lang
 
 def translate_text(sentence, dest='en'):
+    print("transplated")
     return Translator().translate(sentence, dest=dest).text
     
 def is_vietnamese(sentence):
@@ -134,17 +135,35 @@ def tokenize_english(input_string, word_type=None):
         words = pos_tag_english_sentence(input_string)
         words = [word[0] for word in words if word[1] in word_type]
         return process_tags(str(words)) + ' '
-    except:
+    except Exception as e:
+        print(e)
         return ' '
 
 
 if __name__ == '__main__':
     # print(sys.path)
     # test function token english
-    text = 'Học Python miễn phí tại freetuts.net'
+    text = 'Học Python miễn phí tại freetuts.net. This is English, would you be able to detect it'
     translator = Translator()
     dt = translator.detect(text)
     df = translator.translate(text, dest='en')
     print(dt, df.text)
 
+def word_cloud(df, column):
+    font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    wordclouds = {}
+
+    output_folder = "plot_output"
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    # Loop through each year and extract the top words for each year
+    for year in df.index:
+        text = df.loc[year, column]
+        wordcloud = WordCloud(width=800, height=400, background_color='white', font_path=font_path).generate(text)
+        wordclouds[year] = wordcloud
+
+        # Save the word cloud as an image
+        image_path = os.path.join(output_folder, f"wordcloud_{year}.png")
+        wordcloud.to_file(image_path)
 

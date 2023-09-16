@@ -1,8 +1,5 @@
 import pandas as pd
 import os
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
-from underthesea import pos_tag
 from dotenv import load_dotenv
 load_dotenv()
 PATH = (os.environ.get('P'))
@@ -19,14 +16,23 @@ df = df[attributes]
 
 df.release_date = pd.to_datetime(df.release_date)
 df.release_date = df.release_date.dt.year
-df = df.head(20)
+# df = df.head(20)
 df['language'] = df['name'].apply(detect_language)
+
 vi_df = df[df['language'] == 'vi']
 en_df = df[df['language'] == 'en']
 
 # Translate Vietnamese to English
 vi_df['name'] = vi_df['name'].apply(translate_text)
 
-print(df)
-print(vi_df)
-print(en_df)    
+# # Create summary df to save distribution of all languages in the dataset
+# summary_df = pd.DataFrame(columns=['language', 'count'])
+# summary_df['language'] = df['language'].unique()
+# summary_df['count'] = [len(df[df['language'] == lang]) for lang in summary_df['language']]
+# summary_df.to_csv(PATH + '/modules/spotify/summary.csv', index=False)
+
+df.to_csv(PATH + '/modules/spotify/spotify_name_translated.csv', index=False)
+vi_df.to_csv(PATH + '/modules/spotify/vi_spotify_name_translated.csv', index=False)
+en_df.to_csv(PATH + '/modules/spotify/en_spotify_name.csv', index=False)
+
+
