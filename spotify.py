@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 import ast
 from matplotlib import pyplot as plt
+from utils import create_full_country_mapping
 load_dotenv()
 PATH = (os.environ.get('P'))
 
@@ -57,165 +58,38 @@ def episode_description_translated(df):
 # episode_description_translated(df)
 
 
-# Function to create a full mapping of countries
-def create_full_country_mapping(df):
-    country_code_to_name = {
-                'af': 'afrikaans',
-                'sq': 'albanian',
-                'am': 'amharic',
-                'ar': 'arabic',
-                'hy': 'armenian',
-                'az': 'azerbaijani',
-                'eu': 'basque',
-                'be': 'belarusian',
-                'bn': 'bengali',
-                'bs': 'bosnian',
-                'bg': 'bulgarian',
-                'ca': 'catalan',
-                'ceb': 'cebuano',
-                'ny': 'chichewa',
-                'zh-cn': 'chinese (simplified)',
-                'zh-tw': 'chinese (traditional)',
-                'co': 'corsican',
-                'hr': 'croatian',
-                'cs': 'czech',
-                'da': 'danish',
-                'nl': 'dutch',
-                'en': 'english',
-                'eo': 'esperanto',
-                'et': 'estonian',
-                'tl': 'filipino',
-                'fi': 'finnish',
-                'fr': 'french',
-                'fy': 'frisian',
-                'gl': 'galician',
-                'ka': 'georgian',
-                'de': 'german',
-                'el': 'greek',
-                'gu': 'gujarati',
-                'ht': 'haitian creole',
-                'ha': 'hausa',
-                'haw': 'hawaiian',
-                'iw': 'hebrew',
-                'he': 'hebrew',
-                'hi': 'hindi',
-                'hmn': 'hmong',
-                'hu': 'hungarian',
-                'is': 'icelandic',
-                'ig': 'igbo',
-                'id': 'indonesian',
-                'ga': 'irish',
-                'it': 'italian',
-                'ja': 'japanese',
-                'jw': 'javanese',
-                'kn': 'kannada',
-                'kk': 'kazakh',
-                'km': 'khmer',
-                'ko': 'korean',
-                'ku': 'kurdish (kurmanji)',
-                'ky': 'kyrgyz',
-                'lo': 'lao',
-                'la': 'latin',
-                'lv': 'latvian',
-                'lt': 'lithuanian',
-                'lb': 'luxembourgish',
-                'mk': 'macedonian',
-                'mg': 'malagasy',
-                'ms': 'malay',
-                'ml': 'malayalam',
-                'mt': 'maltese',
-                'mi': 'maori',
-                'mr': 'marathi',
-                'mn': 'mongolian',
-                'my': 'myanmar (burmese)',
-                'ne': 'nepali',
-                'no': 'norwegian',
-                'or': 'odia',
-                'ps': 'pashto',
-                'fa': 'persian',
-                'pl': 'polish',
-                'pt': 'portuguese',
-                'pa': 'punjabi',
-                'ro': 'romanian',
-                'ru': 'russian',
-                'sm': 'samoan',
-                'gd': 'scots gaelic',
-                'sr': 'serbian',
-                'st': 'sesotho',
-                'sn': 'shona',
-                'sd': 'sindhi',
-                'si': 'sinhala',
-                'sk': 'slovak',
-                'sl': 'slovenian',
-                'so': 'somali',
-                'es': 'spanish',
-                'su': 'sundanese',
-                'sw': 'swahili',
-                'sv': 'swedish',
-                'tg': 'tajik',
-                'ta': 'tamil',
-                'te': 'telugu',
-                'th': 'thai',
-                'tr': 'turkish',
-                'uk': 'ukrainian',
-                'ur': 'urdu',
-                'ug': 'uyghur',
-                'uz': 'uzbek',
-                'vi': 'vietnamese',
-                'cy': 'welsh',
-                'xh': 'xhosa',
-                'yi': 'yiddish',
-                'yo': 'yoruba',
-                'zu': 'zulu'}
 
-    language_count = {}
- 
-    # Extract unique countries from the 'language' column
-    unique_countries = set()
-    for codes in df['language']:
-        if codes.startswith('[') and codes.endswith(']'):
-            codes = ast.literal_eval(codes)
-            for code in codes:
-                country = country_code_to_name.get(code.lower(), 'Unknown')
-                language_count.update({country: language_count.get(country, 0) + 1})
+if __name__ == '__main__':
+    # episode_description_translated(df)
+    categorized_df = pd.read_csv(PATH + '/data/spotify_name_language_detected.csv')
+    data = create_full_country_mapping(categorized_df)
+
+    total_count = sum(data.values())
+
+    # Define the threshold for languages below 1%
+    threshold = total_count * 0.01
+
+    # Create a new dictionary to store the combined data
+    combined_data = {}
+
+    # Iterate through the data and combine languages below the threshold
+    for language, count in data.items():
+        if count >= threshold:
+            combined_data[language] = count
         else:
-            country = country_code_to_name.get(codes.lower(), 'Unknown')
-            language_count.update({country: language_count.get(country, 0) + 1})
+            combined_data['Other'] = combined_data.get('Other', 0) + count
 
 
-    return language_count
+    labels = combined_data.keys()
+    sizes = combined_data.values()
 
-    
-# episode_description_translated(df)
-categorized_df = pd.read_csv(PATH + '/data/spotify_name_language_detected.csv')
-data = create_full_country_mapping(categorized_df)
+    # Create a pie chart
+    plt.figure(figsize=(10, 8))
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
+    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
-total_count = sum(data.values())
+    # Set the title
+    plt.title("Distribution of Country Names")
 
-# Define the threshold for languages below 1%
-threshold = total_count * 0.01
-
-# Create a new dictionary to store the combined data
-combined_data = {}
-
-# Iterate through the data and combine languages below the threshold
-for language, count in data.items():
-    if count >= threshold:
-        combined_data[language] = count
-    else:
-        combined_data['Other'] = combined_data.get('Other', 0) + count
-
-
-labels = combined_data.keys()
-sizes = combined_data.values()
-
-# Create a pie chart
-plt.figure(figsize=(10, 8))
-plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
-plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-
-# Set the title
-plt.title("Distribution of Country Names")
-
-# Show the pie chart
-plt.savefig('plot_output/language_distribution.png')
+    # Show the pie chart
+    plt.savefig('plot_output/language_distribution.png')
