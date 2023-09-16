@@ -102,7 +102,7 @@ def detect_language(sentence):
     return Translator().detect(sentence).lang
 
 def translate_text(sentence, dest='en'):
-    print("transplated")
+    print("translated")
     return Translator().translate(sentence, dest=dest).text
     
 def is_vietnamese(sentence):
