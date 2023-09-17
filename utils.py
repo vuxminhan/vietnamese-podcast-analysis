@@ -361,6 +361,7 @@ if __name__ == '__main__':
     # print(sys.path)
     # test function token english
     text = 'Học Python miễn phí tại freetuts.net. This is English, would you be able to detect it'
+    text = 'Học Python miễn phí tại freetuts.net. This is English, would you be able to detect it'
     translator = Translator()
     dt = translator.detect(text)
     df = translator.translate(text, dest='en')

@@ -18,9 +18,8 @@ def episode_name_translated(df):
     attributes = ['title', 'publishedAt', 'channelTitle']
     df = df[attributes]
 
-    df.publishedAt = pd.to_datetime(df.publishedAt)
-    df.publishedAt = df.publishedAt.dt.year
-    # df = df.head(20)
+    df['publishedAt'] = pd.to_datetime(df['publishedAt'])
+    df['publishedAt'] = df['publishedAt'].dt.year
     df['language'] = df['title'].apply(detect_language)
 
     vi_df = df[df['language'] == 'vi']
