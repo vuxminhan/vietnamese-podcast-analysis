@@ -2,7 +2,7 @@ import pandas as pd
 import os
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
-from utils import extract_main_spotify_title
+from utils import clean_title
 # from underthesea import pos_tag
 from dotenv import load_dotenv
 import re
@@ -14,7 +14,7 @@ PATH = (os.environ.get('P'))
 def name_word_cloud():
     df = pd.read_csv(PATH + '/data/vi_spotify_name_translated.csv')
     # df = df.head()
-    df['name'] = df.name.apply(lambda x: extract_main_spotify_title(x))
+    df['name'] = df.name.apply(lambda x: clean_title(x))
     df['np_name'] = df.name.apply(lambda x: tokenize_english(x, 'PROPN'))
     df['tokenized_name'] = df.name.apply(lambda x: tokenize_english(x, 'NOUN'))
     # df.to_csv("output.csv", index=False)
@@ -28,7 +28,7 @@ def name_word_cloud():
 def description_word_cloud():
     df = pd.read_csv(PATH + '/data/vi_spotify_description_translated.csv')
     # df = df.head()
-    df['description'] = df.description.apply(lambda x: extract_main_spotify_title(x))
+    df['description'] = df.description.apply(lambda x: clean_title(x))
     df['np_name'] = df.description.apply(lambda x: tokenize_english(x, 'PROPN'))
     df['tokenized_name'] = df.description.apply(lambda x: tokenize_english(x, 'NOUN'))
     # print(df)
@@ -40,4 +40,4 @@ def description_word_cloud():
     word_cloud(grouped_df, "tokenized_name")
     word_cloud(grouped_df, "np_name")
     
-description_word_cloud()
+name_word_cloud()

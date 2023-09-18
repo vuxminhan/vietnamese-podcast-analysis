@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 import ast
 from matplotlib import pyplot as plt
-from utils import create_full_country_mapping
+from utils import clean_title
 load_dotenv()
 PATH = (os.environ.get('P'))
 

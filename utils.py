@@ -49,6 +49,7 @@ def extract_main_spotify_title(podcast_title):
         r'(?i)ep\s?\d+', # Matches "Ep 1"
         r'Cấy nền',
         r'\b[l|-]\b',
+        r'\bshorts\b'
         
     ]
 
@@ -180,7 +181,7 @@ def word_cloud(df, column):
     wordclouds = {}
 
     # Create the output folder if it doesn't exist
-    output_folder = "plot_output"
+    output_folder = "plot_output/spotify2"
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
@@ -190,14 +191,26 @@ def word_cloud(df, column):
         try:
             wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
             wordclouds[year] = wordcloud
-
+            # Add legends and title to saved image
             # Save the word cloud as an image
-            image_path = os.path.join(output_folder, f"vi_wordcloud_description{column}_{year}.png")
-            wordcloud.to_file(image_path)
+                        # Create a figure and axis for the word cloud
+            fig, ax = plt.subplots(figsize=(8, 4))
+            
+            # Add title
+            ax.set_title(f"Year = {year}, n = {df.loc[year, 'count']}", fontdict={"fontsize": 12})
+
+            # Display the word cloud on the axis
+            ax.imshow(wordcloud, interpolation='bilinear')
+            ax.axis('off')  # Turn off axis labels and ticks
+            image_path = os.path.join(output_folder, f"vi_spotify_wordcloud_title{column}_{year}.png")
+            # wordcloud.to_file(image_path)
+            plt.savefig(image_path, bbox_inches='tight')
+            plt.close()
+            
         except Exception as e:
             print(e)
 
-def extract_main_spotify_title(podcast_title):
+def clean_title(podcast_title):
     # Define a list of common patterns in Spotify podcast titles
     patterns = [
         r'\bEpisode \d+\b',  # Matches "Episode 123"
@@ -214,10 +227,25 @@ def extract_main_spotify_title(podcast_title):
         r'Mùa \d+', # Matches "Mùa 1"
         r'AEE \d*', # Matches "AEE 1"
         r'(?i)ep\s?\d+', # Matches "Ep 1"
-        r'Cấy nền',
-        r'audio book',
-        r'download',
+        r'\baudio.*book\b',
+        r'\bdownload\b',
         r'\bl\b',
+        r'\b(?i)chapter\b',
+        r'\b(?i)chapters\b',
+        r'\b(?i)volume\b',
+        r'\b(?i)ep\b',
+        r'\b(?i)implantation\b',
+        r'\b(?i)part\b',
+        r'\b(?i)parts\b',
+        r'\b(?i)number\b',
+        r'\b(?i)voizvndownload\b',
+        r'\b(?i)years\b',
+        r'\b(?i)episode\b',
+        r'\b(?i)shorts\b',
+        r'\b(?i)verse\b',
+        r'\b(?i)verses\b',
+        r'\b(?i)entire\b',
+        r'\b(?i)voizvn\b'
     ]
 
     # Check for common patterns and remove them
