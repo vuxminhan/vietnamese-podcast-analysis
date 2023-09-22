@@ -61,27 +61,126 @@ def episode_description_translated(df):
 
 if __name__ == '__main__':
     # episode_description_translated(df)
-    categorized_df = pd.read_csv(PATH + '/data/spotify_name_language_detected.csv')
-    data = create_full_country_mapping(categorized_df)
+    categorized_df = pd.read_csv(PATH + '/data/podcast_list - chartable - channel_id_language_distribution.csv')
+    # use group by to create a unique list of channel and its language
+    grouped_df = categorized_df.groupby('language').size().reset_index(name='count')
+       # if the channel has more than 1 language, we will use the language that has the most count and make sure each channel appears only once
+    grouped_df = grouped_df.sort_values('count', ascending=False)
 
-    total_count = sum(data.values())
+    country_code_to_name = {
+                'af': 'afrikaans',
+                'sq': 'albanian',
+                'am': 'amharic',
+                'ar': 'arabic',
+                'hy': 'armenian',
+                'az': 'azerbaijani',
+                'eu': 'basque',
+                'be': 'belarusian',
+                'bn': 'bengali',
+                'bs': 'bosnian',
+                'bg': 'bulgarian',
+                'ca': 'catalan',
+                'ceb': 'cebuano',
+                'ny': 'chichewa',
+                'zh-cn': 'chinese (simplified)',
+                'zh-tw': 'chinese (traditional)',
+                'co': 'corsican',
+                'hr': 'croatian',
+                'cs': 'czech',
+                'da': 'danish',
+                'nl': 'dutch',
+                'en': 'english',
+                'eo': 'esperanto',
+                'et': 'estonian',
+                'tl': 'filipino',
+                'fi': 'finnish',
+                'fr': 'french',
+                'fy': 'frisian',
+                'gl': 'galician',
+                'ka': 'georgian',
+                'de': 'german',
+                'el': 'greek',
+                'gu': 'gujarati',
+                'ht': 'haitian creole',
+                'ha': 'hausa',
+                'haw': 'hawaiian',
+                'iw': 'hebrew',
+                'he': 'hebrew',
+                'hi': 'hindi',
+                'hmn': 'hmong',
+                'hu': 'hungarian',
+                'is': 'icelandic',
+                'ig': 'igbo',
+                'id': 'indonesian',
+                'ga': 'irish',
+                'it': 'italian',
+                'ja': 'japanese',
+                'jw': 'javanese',
+                'kn': 'kannada',
+                'kk': 'kazakh',
+                'km': 'khmer',
+                'ko': 'korean',
+                'ku': 'kurdish (kurmanji)',
+                'ky': 'kyrgyz',
+                'lo': 'lao',
+                'la': 'latin',
+                'lv': 'latvian',
+                'lt': 'lithuanian',
+                'lb': 'luxembourgish',
+                'mk': 'macedonian',
+                'mg': 'malagasy',
+                'ms': 'malay',
+                'ml': 'malayalam',
+                'mt': 'maltese',
+                'mi': 'maori',
+                'mr': 'marathi',
+                'mn': 'mongolian',
+                'my': 'myanmar (burmese)',
+                'ne': 'nepali',
+                'no': 'norwegian',
+                'or': 'odia',
+                'ps': 'pashto',
+                'fa': 'persian',
+                'pl': 'polish',
+                'pt': 'portuguese',
+                'pa': 'punjabi',
+                'ro': 'romanian',
+                'ru': 'russian',
+                'sm': 'samoan',
+                'gd': 'scots gaelic',
+                'sr': 'serbian',
+                'st': 'sesotho',
+                'sn': 'shona',
+                'sd': 'sindhi',
+                'si': 'sinhala',
+                'sk': 'slovak',
+                'sl': 'slovenian',
+                'so': 'somali',
+                'es': 'spanish',
+                'su': 'sundanese',
+                'sw': 'swahili',
+                'sv': 'swedish',
+                'tg': 'tajik',
+                'ta': 'tamil',
+                'te': 'telugu',
+                'th': 'thai',
+                'tr': 'turkish',
+                'uk': 'ukrainian',
+                'ur': 'urdu',
+                'ug': 'uyghur',
+                'uz': 'uzbek',
+                'vi': 'vietnamese',
+                'cy': 'welsh',
+                'xh': 'xhosa',
+                'yi': 'yiddish',
+                'yo': 'yoruba',
+                'zu': 'zulu'}
 
-    # Define the threshold for languages below 1%
-    threshold = total_count * 0.01
 
-    # Create a new dictionary to store the combined data
-    combined_data = {}
-
-    # Iterate through the data and combine languages below the threshold
-    for language, count in data.items():
-        if count >= threshold:
-            combined_data[language] = count
-        else:
-            combined_data['Other'] = combined_data.get('Other', 0) + count
-
-
-    labels = combined_data.keys()
-    sizes = combined_data.values()
+    labels = grouped_df['language'].tolist()
+    for i in range(len(labels)):
+        labels[i] = country_code_to_name[labels[i]]
+    sizes = grouped_df['count'].tolist()
 
     # Create a pie chart
     plt.figure(figsize=(10, 8))
@@ -89,7 +188,7 @@ if __name__ == '__main__':
     plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
     # Set the title
-    plt.title("Distribution of Country Names")
+    plt.title("Distribution of languages in the channels dataset")
 
     # Show the pie chart
-    plt.savefig('plot_output/language_distribution.png')
+    plt.savefig('plot_output/channel_language_distribution.png')

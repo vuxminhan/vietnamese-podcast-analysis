@@ -181,7 +181,7 @@ def word_cloud(df, column):
     wordclouds = {}
 
     # Create the output folder if it doesn't exist
-    output_folder = "plot_output/spotify2"
+    output_folder = "plot_output/spotify_channel_name"
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
@@ -202,7 +202,7 @@ def word_cloud(df, column):
             # Display the word cloud on the axis
             ax.imshow(wordcloud, interpolation='bilinear')
             ax.axis('off')  # Turn off axis labels and ticks
-            image_path = os.path.join(output_folder, f"vi_spotify_wordcloud_title{column}_{year}.png")
+            image_path = os.path.join(output_folder, f"vi_spotify_channel_title{column}_{year}.png")
             # wordcloud.to_file(image_path)
             plt.savefig(image_path, bbox_inches='tight')
             plt.close()
@@ -262,6 +262,7 @@ def clean_title(podcast_title):
 
 # Function to create a full mapping of countries
 def create_full_country_mapping(df):
+    
     country_code_to_name = {
                 'af': 'afrikaans',
                 'sq': 'albanian',
@@ -384,6 +385,9 @@ def create_full_country_mapping(df):
 
 
     return language_count
+
+
+
 
 if __name__ == '__main__':
     # print(sys.path)
