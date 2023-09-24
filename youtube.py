@@ -98,10 +98,12 @@ def category_distribution_view(df):
                 topic_view_counts[topic] = {year: 0}
             if year in topic_view_counts[topic]:
                 # Increment the view count for the topic in the given year
-                topic_view_counts[topic][year] += row['viewCount']
+                # topic_view_counts[topic][year] += row['viewCount']
+                topic_view_counts[topic][year] += 1
             else:
                 # Initialize view count for the topic in the given year
-                topic_view_counts[topic][year] = row['viewCount']
+                # topic_view_counts[topic][year] = row['viewCount']
+                topic_view_counts[topic][year] = 1
 
     # Convert the dictionary to a DataFrame
     distribution_df = pd.DataFrame.from_dict(topic_view_counts, orient='index')
@@ -118,16 +120,17 @@ def category_distribution_view(df):
     
     distribution_df = pd.read_csv(PATH + '/data/youtube_category_distribution_by_year.csv')
     # Select the "Total" column for the bar chart
-    total_data = distribution_df[['Total']]
+    total_data = distribution_df[['Topics','Total']]
     total_data.sort_values(by=['Total'], ascending=False, inplace=True)
-    total_data.set_index(distribution_df['Topics'], inplace=True)
+    total_data.set_index(total_data['Topics'], inplace=True)
     
     # Create a bar chart
     ax = total_data.plot(kind='bar', figsize=(12, 8), legend=None)
-    plt.title('Total Topic distribution 2012 - 2023 ranked by total view count')
+    plt.title('Number of videos on YouTube by category 2012 - 2023')
     plt.xlabel('Category')
-    plt.ylabel('Total View Count')
-    plt.savefig('plot_output/total_topic_distribution_bar_chart.png')
+    plt.ylabel('Total Number Of Video')
+    # plt.savefig('plot_output/total_topic_distribution_bar_chart.png')
+    plt.savefig('plot_output/total_topic_video_distribution_bar_chart.png')
     # Display the bar chart
     plt.show()
     

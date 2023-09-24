@@ -76,10 +76,12 @@ if __name__ == "__main__":
     top_channels_spotify = df.sort_values(by=['star_rating','num_ratings'], ascending=False)
     top_channels_spotify.reset_index(drop=True, inplace=True)
     top_channels_spotify['spotify_rank'] = top_channels_spotify.index + 1
+    top_channels_spotify.sort_values(by='spotify_rank', ascending=True, inplace=True) 
     
     top_channels_youtube = df.sort_values(by='likeCount', ascending=False).drop_duplicates(subset=['youtube_channel_id'])
     top_channels_youtube.reset_index(drop=True, inplace=True)
     top_channels_youtube['youtube_rank'] = top_channels_youtube.index + 1
+    top_channels_youtube.sort_values(by='youtube_rank', ascending=True, inplace=True)
     
     top_channels_both = top_channels_spotify.join(top_channels_youtube.set_index('channelTitle'), on='channelTitle', how='inner', lsuffix='_spotify', rsuffix='_youtube')
     top_channels_both['average_rank'] = (top_channels_both['spotify_rank'] + top_channels_both['youtube_rank']) / 2
@@ -88,15 +90,15 @@ if __name__ == "__main__":
     fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(10, 15))
 
     # Plotting the top 15 channels on Spotify
-    sns.barplot(x='star_rating', y='channelTitle', data=top_channels_spotify, ax=axes[0], palette='viridis')
+    sns.barplot(x='star_rating', y='channelTitle', data=top_channels_spotify.head(15), ax=axes[0], palette='viridis')
     axes[0].set_title('Top 15 Channels on Spotify based on Star Rating')
 
     # Plotting the top 15 channels on YouTube
-    sns.barplot(x='likeCount', y='channelTitle', data=top_channels_youtube, ax=axes[1], palette='magma')
+    sns.barplot(x='likeCount', y='channelTitle', data=top_channels_youtube.head(15), ax=axes[1], palette='magma')
     axes[1].set_title('Top 15 Channels on YouTube based on Like Count')
 
     # Plotting the top 15 channels on both platforms combined
-    sns.barplot(x='weighted_rank', y='channelTitle', data=top_channels_both, ax=axes[2], palette='plasma')
+    sns.barplot(x='average_rank', y='channelTitle', data=top_channels_both.head(17), ax=axes[2], palette='plasma')
     axes[2].set_title('Top 15 Channels on Both Platforms (Weighted Rank)')
 
     # Adjusting spacing between subplots
@@ -105,15 +107,15 @@ if __name__ == "__main__":
     # Show the plots
     plt.show()
     
-    average_rank_by_category = df.groupby('topicCategories')['weighted_rank'].mean().reset_index()
+    # average_rank_by_category = df.groupby('topicCategories')['weighted_rank'].mean().reset_index()
 
-    # Sort the DataFrame by average ranking in descending order
-    average_rank_by_category = average_rank_by_category.sort_values(by='weighted_rank', ascending=False)
+    # # Sort the DataFrame by average ranking in descending order
+    # average_rank_by_category = average_rank_by_category.sort_values(by='weighted_rank', ascending=False)
 
-    # Create a bar chart for average ranking by topicCategory
-    plt.figure(figsize=(10, 6))
-    sns.barplot(x='weighted_rank', y='topicCategories', data=average_rank_by_category, palette='viridis')
-    plt.title('Average Ranking by Topic Category')
-    plt.xlabel('Average Weighted Rank')
-    plt.ylabel('Topic Category')
-    plt.show()
+    # # Create a bar chart for average ranking by topicCategory
+    # plt.figure(figsize=(10, 6))
+    # sns.barplot(x='weighted_rank', y='topicCategories', data=average_rank_by_category, palette='viridis')
+    # plt.title('Average Ranking by Topic Category')
+    # plt.xlabel('Average Weighted Rank')
+    # plt.ylabel('Topic Category')
+    # plt.show()

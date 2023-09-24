@@ -189,7 +189,8 @@ def word_cloud(df, column):
     for year in df.index:
         text = df.loc[year, column]
         try:
-            wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
+            
+            wordcloud = WordCloud(width=800, height=400, background_color='white', prefer_horizontal=1, colormap='magma').generate(text)
             wordclouds[year] = wordcloud
             # Add legends and title to saved image
             # Save the word cloud as an image
